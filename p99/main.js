@@ -74,7 +74,7 @@ var Shape = enchant.Class.create(enchant.Surface,{
 	}
 });
 
-var Line = enchant.Class.create(Shape,
+var Line = enchant.Class.create(Shape,{
 	initialize:function(width,height,color,path){
 		Shape.call(this,width,height,color);
 		this.path = path || {start:{x:0,y:25},end:{x:50,y:25}};
@@ -139,7 +139,7 @@ var ShapeBuilder = enchant.Class.create(enchant.Sprite,{
 		game.currentScene.removeChild(this);
 	},
 	onenterframe:function(){
-		if (this.age > 10) this.remove();
+		if (this.age/gs.fps > 1) this.remove();
 
 		this.scale(1.1,1.1);
 		this.rotate(-36);
@@ -154,7 +154,7 @@ window.onload = function(){
 	game.onload = function(){
 		stage.on("enterframe",function(){
 			if(this.age % 3 === 0)
-				this.addChild(new ShapeBuilder(50,50));
+				this.addChild(new ShapeBuilder());
 		});
 	};
 
