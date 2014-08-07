@@ -6,13 +6,14 @@ gs.canvas = {height:320,width:320};	// Windowの高さ，幅
 
 // 拡張Core
 var eCore = enchant.Class.create(enchant.nineleap.Core,{
-	initialize:function(color){	// コンストラクタ
+	initialize:function(color){		// コンストラクタ
 		enchant.nineleap.Core.call(this,gs.canvas.width,gs.canvas.height);
 		this.fps = gs.fps;
 		this.rootScene.backgroundColor = color || "white";
 	}
 });
 
+// Random Generator
 var Generator = (function() {
     function Generator(){}
     
@@ -47,12 +48,15 @@ var STYLE = {STROKE:0,FILL:1};
 
 var Shape = enchant.Class.create(enchant.Surface,{
 	initialize:function(width,height,color,style){
-		enchant.Surface.call(this,50,50);
+		enchant.Surface.call(this,width,height);
 		this.color = color  || Generator.color();
 		this.style = style  || STYLE.STROKE;
 	},
 	beginPath:function(){
 		this.context.beginPath();
+	},
+	drawPath:function(){
+		//abstract
 	},
 	stroke:function(){
 		this.context.strokeStyle = this.color;
@@ -70,7 +74,7 @@ var Shape = enchant.Class.create(enchant.Surface,{
 	}
 });
 
-var Line = enchant.Class.create(Shape,{
+var Line = enchant.Class.create(Shape,
 	initialize:function(width,height,color,path){
 		Shape.call(this,width,height,color);
 		this.path = path || {start:{x:0,y:25},end:{x:50,y:25}};
@@ -108,43 +112,39 @@ var Circle = enchant.Class.create(Shape,{
 	}
 });
 
-var ShapeContainer = enchant.Class.create(enchant.Sprite,{
-	initialize:function(width,height){
-		enchant.Sprite.call(this,width,height);
-		this.image = ShapeBuilder(width,height);
+var ShapeBuilder = enchant.Class.create(enchant.Sprite,{
+	initialize:function(){
+		enchant.Sprite.call(this,50,50);
+		this.build(this.width,this.height);
 		this.image.draw();
-		this.x = Generator.number(220);
-		this.y = Generator.number(220);
+		this.moveTo(Generator.number(220),Generator.number(220))
+	},
+	build:function(width,height){
+		var color = Generator.color(); 
+		switch(Generator.number(3)) {
+		case TYPE.LINE:
+			this.image = new Line(width,height,color);
+			break;
+		case TYPE.RECT:
+			this.image = new Rect(width,height,color
+				,Generator.number(2));
+			break;
+		case TYPE.CIRCLE:
+			this.image = new Circle(width,height,color
+				,Generator.number(2));
+			break;
+		}
+	},
+	remove:function(){
+		game.currentScene.removeChild(this);
 	},
 	onenterframe:function(){
+		if (this.age > 10) this.remove();
+
 		this.scale(1.1,1.1);
-		if (this.age > 10)
-			stage.removeChild(this);
+		this.rotate(-36);
 	}
 });
-
-var ShapeBuilder = function(width,height){
-	var _shape;
-	var _color = Generator.color(); 
-	switch(Generator.number(5)) {
-	case 0:
-		_shape = new Line(width,height,_color);
-		break;
-	case 1:
-		_shape = new Rect(width,height,_color,STYLE.STROKE);
-		break;
-	case 2:
-		_shape = new Rect(width,height,_color,STYLE.FILL);
-		break;
-	case 3:
-		_shape = new Circle(width,height,_color,STYLE.STROKE);
-		break;
-	case 4:
-		_shape = new Circle(width,height,_color,STYLE.FILL);
-		break;
-	}
-	return _shape;
-}
 
 
 window.onload = function(){
@@ -154,7 +154,7 @@ window.onload = function(){
 	game.onload = function(){
 		stage.on("enterframe",function(){
 			if(this.age % 3 === 0)
-				this.addChild(new ShapeContainer(50,50));
+				this.addChild(new ShapeBuilder(50,50));
 		});
 	};
 
