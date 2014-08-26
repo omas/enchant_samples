@@ -77,7 +77,8 @@ var Shape = enchant.Class.create(enchant.Surface,{
 var Line = enchant.Class.create(Shape,{
 	initialize:function(width,height,color,path){
 		Shape.call(this,width,height,color);
-		this.path = path || {start:{x:0,y:25},end:{x:50,y:25}};
+		this.path = path || {
+			start:{x:0,y:25},end:{x:50,y:25}};
 	},
 	drawPath:function(){
 		this.context.moveTo(this.path.start.x,this.path.start.y);
