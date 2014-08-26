@@ -3,7 +3,7 @@ var game,stages;					// GameCore,SceneGroupオブジェクト
 
 var gs = {};					// Gameのfps
 gs.fps = Number(prompt("速度を入れてください (1 - 10)"));
-gs.canvas = {height:480,width:640};	// Windowの高さ，幅
+gs.canvas = {height:480,width:320};	// Windowの高さ，幅
 gs.assets = {};						// アセット格納オブジェクト
 // 全アセットのパスを配列で返す game.preload(gs.assets.loadAssets)
 gs.assets.loadAssets = function(){
